@@ -63,8 +63,8 @@ def _import_docling():
         )
     except ImportError as e:  # pragma: no cover - exercised at runtime
         raise RuntimeError(
-            "Docling is not installed. Install the 'docling' extra: "
-            "`uv sync --extra docling` (or `pip install 'rag-demo-unified[docling]'`)."
+            "Docling is not installed. Run `uv sync` (or "
+            "`pip install rag-demo-unified`) to install it."
         ) from e
     return {
         "InputFormat": InputFormat,
@@ -130,7 +130,9 @@ def _build_converter():
     if hasattr(options, "generate_table_images"):
         options.generate_table_images = True
     return d["DocumentConverter"](
-        format_options={d["InputFormat"].PDF: d["PdfFormatOption"](pipeline_options=options)}
+        format_options={
+            d["InputFormat"].PDF: d["PdfFormatOption"](pipeline_options=options)
+        }
     )
 
 
@@ -277,7 +279,9 @@ def chunk_document(
         if not buf or buf_page is None:
             buf, buf_page = [], None
             return
-        chunk = _flush_section_chunk(buf, current_section_path(), buf_page, doc_id, counter)
+        chunk = _flush_section_chunk(
+            buf, current_section_path(), buf_page, doc_id, counter
+        )
         if chunk is not None:
             chunk.image_ref = page_image(buf_page)
             chunks.append(chunk)

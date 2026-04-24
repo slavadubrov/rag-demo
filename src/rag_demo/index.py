@@ -11,6 +11,7 @@ Two collections live side by side:
 
 from __future__ import annotations
 
+import atexit
 import json
 import logging
 import shutil
@@ -67,6 +68,12 @@ def reset_client() -> None:
         _client = None
 
 
+# Close the local Qdrant client before the interpreter starts tearing down
+# modules. Without this, qdrant-client's own __del__ may fire after sys.meta_path
+# is already None and log a noisy ImportError during shutdown.
+atexit.register(reset_client)
+
+
 def _ensure_collection(name: str, dim: int, *, recreate: bool) -> None:
     client = get_client()
     exists = client.collection_exists(name)
@@ -116,7 +123,9 @@ def _delete_by_doc_id(collection: str, doc_id: str) -> None:
         points_selector=rest.FilterSelector(
             filter=rest.Filter(
                 must=[
-                    rest.FieldCondition(key="doc_id", match=rest.MatchValue(value=doc_id))
+                    rest.FieldCondition(
+                        key="doc_id", match=rest.MatchValue(value=doc_id)
+                    )
                 ]
             )
         ),
@@ -183,7 +192,9 @@ def rebuild_index() -> IngestReport:
         baseline_total += len(b_chunks)
         baseline_chunks.extend(b_chunks)
 
-    _ensure_collection(SETTINGS.multimodal_collection, SETTINGS.embed_dim, recreate=True)
+    _ensure_collection(
+        SETTINGS.multimodal_collection, SETTINGS.embed_dim, recreate=True
+    )
     _ensure_collection(SETTINGS.baseline_collection, SETTINGS.embed_dim, recreate=True)
 
     _upsert_chunks(SETTINGS.multimodal_collection, multimodal_chunks)
@@ -225,7 +236,9 @@ def ingest_single_pdf(pdf_path: Path) -> DocumentSummary:
         max_pages=SETTINGS.max_pages_per_doc,
     )
 
-    _ensure_collection(SETTINGS.multimodal_collection, SETTINGS.embed_dim, recreate=False)
+    _ensure_collection(
+        SETTINGS.multimodal_collection, SETTINGS.embed_dim, recreate=False
+    )
     _ensure_collection(SETTINGS.baseline_collection, SETTINGS.embed_dim, recreate=False)
 
     # Refresh this upload path (same filename can produce a new doc_id when the
@@ -289,7 +302,9 @@ def search(
         must.append(rest.FieldCondition(key="doc_id", match=rest.MatchAny(any=doc_ids)))
     if element_types:
         must.append(
-            rest.FieldCondition(key="element_type", match=rest.MatchAny(any=element_types))
+            rest.FieldCondition(
+                key="element_type", match=rest.MatchAny(any=element_types)
+            )
         )
     flt = rest.Filter(must=must) if must else None
 
@@ -330,9 +345,12 @@ def scroll_page_fallback(
         scroll_filter=rest.Filter(
             must=[
                 rest.FieldCondition(key="doc_id", match=rest.MatchValue(value=doc_id)),
-                rest.FieldCondition(key="page_num", match=rest.MatchValue(value=page_num)),
                 rest.FieldCondition(
-                    key="element_type", match=rest.MatchValue(value="page_fallback_chunk")
+                    key="page_num", match=rest.MatchValue(value=page_num)
+                ),
+                rest.FieldCondition(
+                    key="element_type",
+                    match=rest.MatchValue(value="page_fallback_chunk"),
                 ),
             ]
         ),
@@ -361,7 +379,11 @@ def get_evidence(chunk_id: str) -> Evidence | None:
     res = client.scroll(
         collection_name=SETTINGS.multimodal_collection,
         scroll_filter=rest.Filter(
-            must=[rest.FieldCondition(key="chunk_id", match=rest.MatchValue(value=chunk_id))]
+            must=[
+                rest.FieldCondition(
+                    key="chunk_id", match=rest.MatchValue(value=chunk_id)
+                )
+            ]
         ),
         limit=1,
         with_payload=True,

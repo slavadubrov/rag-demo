@@ -76,9 +76,7 @@ def test_baseline_index_retrieves_expected_page(tiny_pdf):
     _upsert_chunks(SETTINGS.baseline_collection, chunks)
 
     qvec = embed_query("bottleneck building block parameters")
-    results = search(
-        SETTINGS.baseline_collection, qvec, limit=5, doc_ids=[doc_id]
-    )
+    results = search(SETTINGS.baseline_collection, qvec, limit=5, doc_ids=[doc_id])
     assert results, "expected at least one result"
     # Page 2 contains the bottleneck text → top hit should come from there
     top = results[0]

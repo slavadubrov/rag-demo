@@ -148,7 +148,9 @@ def download_corpus(
             )
         except Exception as e:  # noqa: BLE001
             results.append(
-                DownloadResult(filename=filename, status="failed", url=url, error=str(e))
+                DownloadResult(
+                    filename=filename, status="failed", url=url, error=str(e)
+                )
             )
         time.sleep(0.5)
 

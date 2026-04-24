@@ -41,7 +41,9 @@ def compute_extraction_stats(
         doc_id = filename_to_doc_id(filename, doc_manifest)
         stats = ExtractionStats(filename=filename, doc_id=doc_id, ingested=bool(doc_id))
         if not doc_id:
-            stats.notes.append("not yet ingested — run rebuild after downloading the PDF")
+            stats.notes.append(
+                "not yet ingested — run rebuild after downloading the PDF"
+            )
             out.append(stats)
             continue
 

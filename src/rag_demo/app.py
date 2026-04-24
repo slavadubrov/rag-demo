@@ -261,7 +261,9 @@ def _ask_stream(question: str, doc_ids: list[str], mode: str, top_k: int):
                 "",
             )
 
-        baseline_payload = run_query(question, mode="baseline", doc_ids=doc_ids, top_k=top_k)
+        baseline_payload = run_query(
+            question, mode="baseline", doc_ids=doc_ids, top_k=top_k
+        )
         primary = multimodal_payload or baseline_payload
 
         evidence = primary.evidence
@@ -303,7 +305,9 @@ def _ask_stream(question: str, doc_ids: list[str], mode: str, top_k: int):
                 f"### {actual_mode.capitalize()} (streaming)\n\n{partial}"
                 if actual_mode == "multimodal"
                 else "_Not run._",
-                "_Not run._" if actual_mode == "multimodal" else f"### Baseline (streaming)\n\n{partial}",
+                "_Not run._"
+                if actual_mode == "multimodal"
+                else f"### Baseline (streaming)\n\n{partial}",
                 f"```json\n{json.dumps(debug, indent=2)}\n```",
                 [],
                 [],
@@ -383,8 +387,7 @@ def _ingest_uploaded(files):
         return
     if ingest_single_pdf is None or not docling_available():
         yield (
-            "❌ Docling is not installed. Install the `docling` extra "
-            "(`uv sync --extra docling`) and rerun.",
+            "❌ Docling is not installed. Run `uv sync` and relaunch.",
             gr.CheckboxGroup(),
         )
         return
@@ -438,8 +441,7 @@ def build_ui() -> gr.Blocks:
     if not docling_available():
         warnings.append(
             "**Docling is not installed.** Ingestion is disabled. "
-            "Install the optional extra: `uv sync --extra docling` "
-            "(you can still query an already-built index)."
+            "Run `uv sync` to install it (querying an already-built index still works)."
         )
 
     with gr.Blocks(title="Unified Multimodal PDF RAG with Docling") as demo:
@@ -476,7 +478,9 @@ and in-UI ingestion.
                             file_types=[".pdf"],
                         )
                         upload_btn = gr.Button("Ingest uploaded PDF(s)")
-                        rebuild_btn = gr.Button("Run full Ingestion & Indexing on corpus/")
+                        rebuild_btn = gr.Button(
+                            "Run full Ingestion & Indexing on corpus/"
+                        )
 
                     gr.Markdown("### 2. Sample questions")
                     samples = gr.Radio(choices=SAMPLE_QUESTIONS, label=None, value=None)
@@ -507,8 +511,22 @@ and in-UI ingestion.
                         with gr.Tab("Evidence"):
                             evidence_md = gr.Markdown()
                             evidence_table = gr.Dataframe(
-                                headers=["#", "type", "doc", "page", "score", "snippet"],
-                                datatype=["number", "str", "str", "number", "str", "str"],
+                                headers=[
+                                    "#",
+                                    "type",
+                                    "doc",
+                                    "page",
+                                    "score",
+                                    "snippet",
+                                ],
+                                datatype=[
+                                    "number",
+                                    "str",
+                                    "str",
+                                    "number",
+                                    "str",
+                                    "str",
+                                ],
                                 interactive=False,
                                 wrap=True,
                                 label="Retrieved chunks",
@@ -530,8 +548,22 @@ and in-UI ingestion.
                         with gr.Tab("Debug"):
                             debug_md = gr.Markdown()
                             debug_table = gr.Dataframe(
-                                headers=["#", "type", "doc", "page", "score", "snippet"],
-                                datatype=["number", "str", "str", "number", "str", "str"],
+                                headers=[
+                                    "#",
+                                    "type",
+                                    "doc",
+                                    "page",
+                                    "score",
+                                    "snippet",
+                                ],
+                                datatype=[
+                                    "number",
+                                    "str",
+                                    "str",
+                                    "number",
+                                    "str",
+                                    "str",
+                                ],
                                 interactive=False,
                                 wrap=True,
                                 label="Final ranked evidence",

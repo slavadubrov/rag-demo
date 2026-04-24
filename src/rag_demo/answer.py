@@ -63,13 +63,20 @@ def _format_evidence_text(evidence: list[Evidence]) -> str:
 
 def _image_path_for(e: Evidence) -> str | None:
     """Prefer the Docling crop; fall back to the full page render."""
-    for candidate in (e.crop_image_path, e.chunk.crop_ref, e.page_image_path, e.chunk.image_ref):
+    for candidate in (
+        e.crop_image_path,
+        e.chunk.crop_ref,
+        e.page_image_path,
+        e.chunk.image_ref,
+    ):
         if candidate and Path(candidate).exists():
             return candidate
     return None
 
 
-def _select_image_evidence(evidence: list[Evidence], max_images: int = 3) -> list[tuple[Evidence, str]]:
+def _select_image_evidence(
+    evidence: list[Evidence], max_images: int = 3
+) -> list[tuple[Evidence, str]]:
     """Pick up to ``max_images`` distinct images from the top evidence.
 
     Priority:
@@ -190,7 +197,11 @@ def _validate_citations(answer_text: str, evidence: list[Evidence]) -> dict:
         ok = any(
             (doc_id == d) or (doc_id in d) or (d in doc_id)
             for d in retrieved_pages.keys()
-        ) and any(p in retrieved_pages[d] for d in retrieved_pages if doc_id in d or d in doc_id)
+        ) and any(
+            p in retrieved_pages[d]
+            for d in retrieved_pages
+            if doc_id in d or d in doc_id
+        )
         record = {"doc_id": doc_id, "page_num": p}
         (valid if ok else invalid).append(record)
     return {

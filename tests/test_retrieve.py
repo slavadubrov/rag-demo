@@ -64,7 +64,9 @@ def test_run_full_rebuild_yields_two_outputs(monkeypatch):
 
     monkeypatch.setattr(app, "reset_client", lambda: None)
     monkeypatch.setattr(app, "rebuild_index", lambda: report)
-    monkeypatch.setattr(app, "_doc_choices", lambda: [("Doc (doc, 2p, 5 chunks)", "doc")])
+    monkeypatch.setattr(
+        app, "_doc_choices", lambda: [("Doc (doc, 2p, 5 chunks)", "doc")]
+    )
 
     events = list(app._run_full_rebuild())
     assert len(events) == 2

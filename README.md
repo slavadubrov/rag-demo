@@ -31,20 +31,16 @@ index — runs in parallel for side-by-side comparison.
   preserved; only the uploaded doc's rows are refreshed.
 - **Offline-safe** — missing `OPENAI_API_KEY` degrades gracefully to
   deterministic hash embeddings + an evidence-only stub answer.
-- **Optional Docling extra** — install `[docling]` only if you need to ingest.
-  Query-only / development installs stay lean.
-- **Pytest suite** — runs fully offline (no OpenAI, no Docling) via a
-  synthetic PyMuPDF-generated PDF.
+- **Pytest suite** — runs fully offline (no OpenAI required) via a synthetic
+  PyMuPDF-generated PDF; Docling itself isn't touched by the tests.
 - **Polished UI** — custom CSS, Iowan Old Style typography, tabbed layout
   (Answer / Evidence / Page Preview / Tables / Baseline Comparison / Debug).
 
 ## Quickstart
 
 ```bash
-# 1. Install — include the Docling extra so you can ingest PDFs
-uv sync --extra docling            # or: make install
-# Or: lightweight install for query-only usage against a prebuilt index:
-# uv sync                          # (make install-lite)
+# 1. Install (Docling + Qdrant + Gradio + OpenAI SDK + PyMuPDF, etc.)
+uv sync                            # or: make install
 
 # 2. Optional: configure your OpenAI key
 cp .env.example .env
@@ -165,7 +161,7 @@ The unified build picks from each of the three reference implementations:
   + `item.image.pil_image.save(...)` so figure/table **crops** are persisted
   and passed to the vision model; real OpenAI streaming; the in-UI
   "Run Ingestion & Indexing" button.
-- **`rag-demo-codex`** — Pytest suite shape; optional `docling` extra; custom
+- **`rag-demo-codex`** — Pytest suite shape; custom
   CSS + typography for the UI; eval module split (extraction / judge /
   retrieval-eval) to tame the single 700-LOC file.
 

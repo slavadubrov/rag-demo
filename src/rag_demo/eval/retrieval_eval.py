@@ -86,7 +86,8 @@ def _expected_kinds_for_question(question: str) -> set[str]:
     q = question.lower()
     expected: set[str] = set()
     if re.search(
-        r"\b(table|column|row|cell|appendix entry|attainment|labour-market|values?)\b", q
+        r"\b(table|column|row|cell|appendix entry|attainment|labour-market|values?)\b",
+        q,
     ):
         expected.add("table_chunk")
     if re.search(
@@ -190,7 +191,9 @@ def evaluate_question(
         result.mm_answer_chars = len(mm.answer or "")
         result.mm_cited_pages = _payload_cited_pages(mm)
         result.mm_text_cited_pages = _text_cited_pages(mm.answer)
-        result.mm_has_citation = bool(result.mm_text_cited_pages or result.mm_cited_pages)
+        result.mm_has_citation = bool(
+            result.mm_text_cited_pages or result.mm_cited_pages
+        )
         result.mm_citation_page_match = any(
             p in result.mm_evidence_pages for p in result.mm_cited_pages
         )
@@ -216,7 +219,9 @@ def evaluate_question(
         result.bl_answer_chars = len(bl.answer or "")
         result.bl_cited_pages = _payload_cited_pages(bl)
         result.bl_text_cited_pages = _text_cited_pages(bl.answer)
-        result.bl_has_citation = bool(result.bl_text_cited_pages or result.bl_cited_pages)
+        result.bl_has_citation = bool(
+            result.bl_text_cited_pages or result.bl_cited_pages
+        )
         result.bl_citation_page_match = any(
             p in result.bl_evidence_pages for p in result.bl_cited_pages
         )
@@ -260,7 +265,9 @@ def aggregate(results: list[QuestionResult]) -> dict:
         "runnable": len(runnable),
         "errors": len(results) - len(runnable),
         "multimodal": {
-            "expected_type_hit_rate": mean(int(r.mm_has_expected_type) for r in runnable),
+            "expected_type_hit_rate": mean(
+                int(r.mm_has_expected_type) for r in runnable
+            ),
             "citation_present_rate": mean(int(r.mm_has_citation) for r in runnable),
             "model_emitted_citation_rate": mean(
                 int(bool(r.mm_text_cited_pages)) for r in runnable
@@ -272,7 +279,9 @@ def aggregate(results: list[QuestionResult]) -> dict:
             "mean_seconds": mean(r.mm_seconds for r in runnable),
         },
         "baseline": {
-            "expected_type_hit_rate": mean(int(r.bl_has_expected_type) for r in runnable),
+            "expected_type_hit_rate": mean(
+                int(r.bl_has_expected_type) for r in runnable
+            ),
             "citation_present_rate": mean(int(r.bl_has_citation) for r in runnable),
             "model_emitted_citation_rate": mean(
                 int(bool(r.bl_text_cited_pages)) for r in runnable
@@ -288,10 +297,16 @@ def aggregate(results: list[QuestionResult]) -> dict:
     if judge_results:
         agg["judge"] = {
             "n": len(judge_results),
-            "multimodal_mean_score": mean(r.judge_multimodal_score for r in judge_results),
+            "multimodal_mean_score": mean(
+                r.judge_multimodal_score for r in judge_results
+            ),
             "baseline_mean_score": mean(r.judge_baseline_score for r in judge_results),
-            "multimodal_wins": sum(1 for r in judge_results if r.judge_winner == "multimodal"),
-            "baseline_wins": sum(1 for r in judge_results if r.judge_winner == "baseline"),
+            "multimodal_wins": sum(
+                1 for r in judge_results if r.judge_winner == "multimodal"
+            ),
+            "baseline_wins": sum(
+                1 for r in judge_results if r.judge_winner == "baseline"
+            ),
             "ties": sum(1 for r in judge_results if r.judge_winner == "tie"),
         }
     return agg
@@ -330,7 +345,9 @@ def run_eval(
             qs = qs[:max_questions_per_doc]
         for q in qs:
             logger.info("eval: %s :: %s", filename, q[:60])
-            qr = evaluate_question(filename, doc_id, q, top_k=top_k, use_judge=use_judge)
+            qr = evaluate_question(
+                filename, doc_id, q, top_k=top_k, use_judge=use_judge
+            )
             questions.append(qr)
 
     return EvalReport(

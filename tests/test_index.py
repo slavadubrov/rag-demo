@@ -71,7 +71,9 @@ def test_ingest_single_pdf_replaces_existing_manifest_entry_for_same_upload_path
             object(),
         ),
     )
-    monkeypatch.setattr(index, "chunk_document", lambda doc, doc_id, page_imgs: mm_chunks)
+    monkeypatch.setattr(
+        index, "chunk_document", lambda doc, doc_id, page_imgs: mm_chunks
+    )
     monkeypatch.setattr(index, "save_chunks", lambda doc_id, chunks: None)
     monkeypatch.setattr(
         index,

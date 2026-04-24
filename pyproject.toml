@@ -5,6 +5,8 @@ description = "Unified multimodal PDF RAG demo with Docling, Qdrant, OpenAI, and
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "docling>=2.0.0",
+    "docling-core>=2.0.0",
     "gradio>=5.0.0",
     "qdrant-client>=1.11.0",
     "openai>=1.50.0",
@@ -15,9 +17,6 @@ dependencies = [
     "pydantic>=2.0.0",
     "requests>=2.32.0",
 ]
-
-[project.optional-dependencies]
-docling = ["docling>=2.0.0", "docling-core>=2.0.0"]
 
 [project.scripts]
 rag-demo = "rag_demo.cli:main"

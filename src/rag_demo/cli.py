@@ -93,7 +93,9 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="rag-demo")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    rb = sub.add_parser("rebuild", help="Re-ingest the corpus and rebuild both vector indexes.")
+    rb = sub.add_parser(
+        "rebuild", help="Re-ingest the corpus and rebuild both vector indexes."
+    )
     rb.set_defaults(func=cmd_rebuild)
 
     ls = sub.add_parser("list", help="List ingested documents.")
@@ -109,7 +111,9 @@ def build_parser() -> argparse.ArgumentParser:
     app = sub.add_parser("app", help="Launch the Gradio UI.")
     app.set_defaults(func=cmd_app)
 
-    dl = sub.add_parser("download", help="Download the curated corpus from the manifest.")
+    dl = sub.add_parser(
+        "download", help="Download the curated corpus from the manifest."
+    )
     dl.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     dl.add_argument("--target-dir", type=Path, default=DEFAULT_TARGET_DIR)
     dl.add_argument("--overwrite", action="store_true")
@@ -119,13 +123,20 @@ def build_parser() -> argparse.ArgumentParser:
     dl.set_defaults(func=cmd_download)
 
     ev = sub.add_parser(
-        "eval", help="Evaluate extraction + generation against the manifest's benchmark questions."
+        "eval",
+        help="Evaluate extraction + generation against the manifest's benchmark questions.",
     )
     ev.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
-    ev.add_argument("--only", nargs="*", default=None, help="restrict to these filenames")
-    ev.add_argument("--max-questions", type=int, default=None, help="cap questions per doc")
+    ev.add_argument(
+        "--only", nargs="*", default=None, help="restrict to these filenames"
+    )
+    ev.add_argument(
+        "--max-questions", type=int, default=None, help="cap questions per doc"
+    )
     ev.add_argument("--top-k", type=int, default=6)
-    ev.add_argument("--judge", action="store_true", help="use the LLM judge (extra OpenAI cost)")
+    ev.add_argument(
+        "--judge", action="store_true", help="use the LLM judge (extra OpenAI cost)"
+    )
     ev.add_argument("--report", type=Path, default=None, help="markdown report path")
     ev.add_argument("--json", type=Path, default=None, help="JSON report path")
     ev.set_defaults(func=cmd_eval)

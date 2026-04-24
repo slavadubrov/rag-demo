@@ -51,7 +51,7 @@ def _openai_embed_batch(texts: Sequence[str], model: str) -> np.ndarray:
                 if attempt == 2:
                     raise
                 logger.warning("embed retry %d: %s", attempt, e)
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         out.extend([d.embedding for d in resp.data])
     return np.array(out, dtype=np.float32)
 
@@ -69,7 +69,9 @@ def embed_texts(texts: Sequence[str]) -> np.ndarray:
         else:
             return _openai_embed_batch(texts, SETTINGS.embed_model)
 
-    return np.stack([_hash_embed(t, SETTINGS.embed_dim) for t in texts]).astype(np.float32)
+    return np.stack([_hash_embed(t, SETTINGS.embed_dim) for t in texts]).astype(
+        np.float32
+    )
 
 
 def embed_query(text: str) -> np.ndarray:

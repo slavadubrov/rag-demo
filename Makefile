@@ -10,17 +10,14 @@ PYTEST := $(UV) run pytest
 MAX_PAGES_PER_DOC ?= 60
 GRADIO_SERVER_PORT ?= 7860
 
-.PHONY: help install install-lite env download ingest app query eval eval-judge list test clean clean-data clean-corpus
+.PHONY: help install env download ingest app query eval eval-judge list test clean clean-data clean-corpus
 
 help: ## Show every make target
 	@echo "rag-demo-unified"
 	@echo
 	@grep -E '^[a-zA-Z0-9_.-]+:.*## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "  %-18s %s\n", $$1, $$2}'
 
-install: ## Full install (includes Docling — needed for ingestion)
-	$(UV) sync --extra docling
-
-install-lite: ## Lightweight install (skips Docling; query-only on pre-built index)
+install: ## Install all deps (Docling included; needed for ingestion)
 	$(UV) sync
 
 env: ## Create .env from .env.example if it doesn't exist
