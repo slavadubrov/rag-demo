@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import rag_demo.corpus as corpus
 from rag_demo.corpus import (
     DownloadResult,
     download_corpus,
@@ -59,3 +60,60 @@ def test_render_report_groups_by_status():
     assert "downloaded" in md
     assert "manual_required" in md
     assert "a.pdf" in md
+
+
+def test_invalid_existing_file_is_redownloaded(monkeypatch, tmp_path):
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "documents": [
+                    {"filename": "doc.pdf", "direct_pdf_url": "https://example.com/doc"}
+                ]
+            }
+        )
+    )
+    target = tmp_path / "out"
+    target.mkdir()
+    (target / "doc.pdf").write_text("<html>not a pdf</html>", encoding="utf-8")
+
+    def fake_stream_download(url, dest):
+        dest.write_bytes(b"%PDF- ok")
+        return dest.stat().st_size
+
+    monkeypatch.setattr(corpus, "_stream_download", fake_stream_download)
+
+    results = download_corpus(manifest_path=manifest, target_dir=target)
+
+    assert results[0].status == "downloaded"
+    assert (target / "doc.pdf").read_bytes().startswith(b"%PDF-")
+
+
+def test_transient_download_failure_retries(monkeypatch, tmp_path):
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "documents": [
+                    {"filename": "doc.pdf", "direct_pdf_url": "https://example.com/doc"}
+                ]
+            }
+        )
+    )
+    target = tmp_path / "out"
+    calls = {"n": 0}
+
+    def flaky_stream_download(url, dest):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise OSError("temporary incomplete read")
+        dest.write_bytes(b"%PDF- ok")
+        return dest.stat().st_size
+
+    monkeypatch.setattr(corpus, "_stream_download", flaky_stream_download)
+    monkeypatch.setattr(corpus.time, "sleep", lambda seconds: None)
+
+    results = download_corpus(manifest_path=manifest, target_dir=target)
+
+    assert calls["n"] == 2
+    assert results[0].status == "downloaded"

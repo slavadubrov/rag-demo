@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" font-family="Iowan Old Style, Georgia, serif" font-size="14">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#17212b"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #17212b; stroke-width: 1.4; rx: 8; ry: 8; }
+      .step { fill: #0f766e; }
+      .chunk-sec { fill: #e7f3f1; stroke: #0f766e; stroke-width: 1.5; rx: 8; ry: 8; }
+      .chunk-tbl { fill: #fff2e3; stroke: #d97706; stroke-width: 1.5; rx: 8; ry: 8; }
+      .chunk-fig { fill: #eef0fa; stroke: #5b6cad; stroke-width: 1.5; rx: 8; ry: 8; }
+      .chunk-cap { fill: #fbeef3; stroke: #b43b6f; stroke-width: 1.5; rx: 8; ry: 8; }
+      .chunk-pg  { fill: #f0efe7; stroke: #7a7263; stroke-width: 1.5; rx: 8; ry: 8; }
+      .label { font-weight: 700; fill: #17212b; }
+      .sub   { font-size: 12px; fill: #4b5563; }
+      .arrow { stroke: #17212b; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .dash  { stroke-dasharray: 5 4; }
+      .note  { font-size: 12px; fill: #6b5e3c; font-style: italic; }
+    </style>
+  </defs>
+  <rect width="1100" height="620" fill="#f7f4ec"/>
+
+  <text x="40" y="38" font-size="22" class="label">Ingestion pipeline — from PDF bytes to typed, indexable chunks</text>
+  <text x="40" y="60" class="sub">src/rag_demo/ingest.py + src/rag_demo/index.py</text>
+
+  <!-- Row 1: input stages -->
+  <rect x="40" y="90" width="150" height="56" class="box"/>
+  <text x="115" y="112" text-anchor="middle" class="label">PDF file</text>
+  <text x="115" y="130" text-anchor="middle" class="sub">corpus/*.pdf</text>
+
+  <rect x="220" y="90" width="170" height="56" class="box"/>
+  <text x="305" y="112" text-anchor="middle" class="label">_doc_id()</text>
+  <text x="305" y="130" text-anchor="middle" class="sub">stem + sha1 prefix</text>
+
+  <rect x="420" y="90" width="220" height="56" class="box"/>
+  <text x="530" y="112" text-anchor="middle" class="label">PyMuPDF render</text>
+  <text x="530" y="130" text-anchor="middle" class="sub">page PNGs @ PAGE_RENDER_DPI</text>
+
+  <rect x="670" y="90" width="260" height="56" class="box"/>
+  <text x="800" y="112" text-anchor="middle" class="label">Docling parse</text>
+  <text x="800" y="130" text-anchor="middle" class="sub">generate_page_images + _picture_images</text>
+
+  <rect x="960" y="90" width="100" height="56" class="box"/>
+  <text x="1010" y="112" text-anchor="middle" class="label">Save JSON</text>
+  <text x="1010" y="130" text-anchor="middle" class="sub">DoclingDoc</text>
+
+  <path class="arrow" d="M 190 118 L 220 118"/>
+  <path class="arrow" d="M 390 118 L 420 118"/>
+  <path class="arrow" d="M 640 118 L 670 118"/>
+  <path class="arrow" d="M 930 118 L 960 118"/>
+
+  <!-- Row 2: chunker walks items -->
+  <rect x="40" y="190" width="1020" height="70" class="box" fill="#fff"/>
+  <text x="550" y="215" text-anchor="middle" class="label">chunk_document() — iterate DoclingDoc items with a section-header stack</text>
+  <text x="550" y="238" text-anchor="middle" class="sub">SectionHeaderItem updates stack · TextItem buffered to section_chunk · TableItem / PictureItem flush → typed chunk · captions split out · page_fallback chunks in a final pass</text>
+
+  <!-- Row 3: typed chunks -->
+  <text x="40" y="295" class="label">Five typed chunk classes produced</text>
+
+  <g transform="translate(40,310)">
+    <rect width="195" height="100" class="chunk-sec"/>
+    <text x="15" y="25" class="label" fill="#0f766e">section_chunk</text>
+    <text x="15" y="48" class="sub">900–1600 char buffered</text>
+    <text x="15" y="66" class="sub">prose per (section, page)</text>
+    <text x="15" y="84" class="sub">carries section_path</text>
+  </g>
+
+  <g transform="translate(245,310)">
+    <rect width="195" height="100" class="chunk-tbl"/>
+    <text x="15" y="25" class="label" fill="#d97706">table_chunk</text>
+    <text x="15" y="48" class="sub">caption + markdown body</text>
+    <text x="15" y="66" class="sub">table_html, table_markdown</text>
+    <text x="15" y="84" class="sub">optional crop PNG</text>
+  </g>
+
+  <g transform="translate(450,310)">
+    <rect width="195" height="100" class="chunk-fig"/>
+    <text x="15" y="25" class="label" fill="#5b6cad">figure_chunk</text>
+    <text x="15" y="48" class="sub">caption-as-text body</text>
+    <text x="15" y="66" class="sub">cropped picture PNG</text>
+    <text x="15" y="84" class="sub">bbox from Docling prov</text>
+  </g>
+
+  <g transform="translate(655,310)">
+    <rect width="195" height="100" class="chunk-cap"/>
+    <text x="15" y="25" class="label" fill="#b43b6f">caption_chunk</text>
+    <text x="15" y="48" class="sub">stand-alone caption</text>
+    <text x="15" y="66" class="sub">parent_id → fig/table</text>
+    <text x="15" y="84" class="sub">boosted for figure queries</text>
+  </g>
+
+  <g transform="translate(860,310)">
+    <rect width="200" height="100" class="chunk-pg"/>
+    <text x="15" y="25" class="label" fill="#7a7263">page_fallback_chunk</text>
+    <text x="15" y="48" class="sub">all page text joined</text>
+    <text x="15" y="66" class="sub">neighborhood expansion</text>
+    <text x="15" y="84" class="sub">safety net + rerank anchor</text>
+  </g>
+
+  <!-- Row 4: persistence + collections -->
+  <rect x="40" y="445" width="300" height="70" class="box"/>
+  <text x="190" y="470" text-anchor="middle" class="label">JSONL on disk</text>
+  <text x="190" y="490" text-anchor="middle" class="sub">data/chunks/&lt;doc_id&gt;.jsonl</text>
+
+  <rect x="370" y="445" width="320" height="70" class="box"/>
+  <text x="530" y="470" text-anchor="middle" class="label">embed_texts()</text>
+  <text x="530" y="490" text-anchor="middle" class="sub">OpenAI text-embedding-3-small (or hash fallback)</text>
+
+  <rect x="720" y="445" width="340" height="70" class="box"/>
+  <text x="890" y="470" text-anchor="middle" class="label">Qdrant upsert</text>
+  <text x="890" y="490" text-anchor="middle" class="sub">multimodal_chunks + baseline_chunks (parallel indexes)</text>
+
+  <path class="arrow" d="M 150 410 L 150 445"/>
+  <path class="arrow" d="M 340 480 L 370 480"/>
+  <path class="arrow" d="M 690 480 L 720 480"/>
+
+  <!-- Baseline branch -->
+  <rect x="40" y="540" width="1020" height="56" class="box" fill="#fff8ec"/>
+  <text x="550" y="565" text-anchor="middle" class="label">Baseline path (parallel): baseline_chunks_from_pdf()</text>
+  <text x="550" y="585" text-anchor="middle" class="sub">PyMuPDF page text → ~1 KB chunks → baseline_chunks collection. No visuals, no typed filtering — structurally fair contrast.</text>
+
+  <text x="40" y="620" class="note">Notes: ingest_one() is also the entry for in-UI single-PDF uploads. ingest_single_pdf() upserts without recreating the collection and purges stale rows tied to the same pdf_path.</text>
+</svg>

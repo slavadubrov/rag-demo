@@ -36,6 +36,16 @@ index — runs in parallel for side-by-side comparison.
 - **Polished UI** — custom CSS, Iowan Old Style typography, tabbed layout
   (Answer / Evidence / Page Preview / Tables / Baseline Comparison / Debug).
 
+## Documentation
+
+A full guide with SVG diagrams lives in [`docs/`](docs/README.md) — start
+with the [Overview](docs/01-overview.md) and [Architecture](docs/02-architecture.md)
+chapters for the big picture, or jump straight to
+[Retrieval](docs/04-retrieval.md) / [Answering](docs/05-answering.md) /
+[Evaluation](docs/06-evaluation.md) for a specific subsystem. The roadmap
+chapter ([`08-roadmap.md`](docs/08-roadmap.md)) tracks known gaps and
+candidate next steps.
+
 ## Quickstart
 
 ```bash
@@ -46,8 +56,7 @@ uv sync                            # or: make install
 cp .env.example .env
 # then edit .env and set OPENAI_API_KEY=sk-...
 
-# 3. Download the curated corpus (some entries require manual download —
-#    the report prints the source URLs)
+# 3. Download the curated corpus
 uv run rag-demo download           # or: make download
 
 # 4. Build the index
@@ -170,6 +179,6 @@ The unified build picks from each of the three reference implementations:
 - Without `OPENAI_API_KEY`, the pipeline still ingests, indexes (deterministic
   hash embeddings), and renders the UI. The Answer tab will surface the top
   retrieved evidence rather than a synthesized response.
-- The bundled manifest lists 10 public PDFs (arXiv papers, OECD/IMF/WHO/WB
-  reports, NASA handbooks). Some (OECD Education, IMF GFSR, World Bank, NASA
-  NTRS) require manual download — the download report prints the URLs.
+- The bundled manifest lists 10 public PDFs (arXiv papers, OECD/WHO/Federal
+  Reserve/World Bank reports, NASA handbooks), each with a direct PDF URL for
+  scripted download.

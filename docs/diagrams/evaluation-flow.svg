@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 580" font-family="Iowan Old Style, Georgia, serif" font-size="14">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#17212b"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #17212b; stroke-width: 1.4; rx: 8; ry: 8; }
+      .label { font-weight: 700; fill: #17212b; }
+      .sub { font-size: 12px; fill: #4b5563; }
+      .arrow { stroke: #17212b; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .band-a { fill: rgba(15,118,110,0.07); stroke: rgba(15,118,110,0.3); stroke-dasharray: 4 3; rx: 12; ry: 12; }
+      .band-b { fill: rgba(217,119,6,0.08); stroke: rgba(217,119,6,0.3); stroke-dasharray: 4 3; rx: 12; ry: 12; }
+      .band-c { fill: rgba(91,108,173,0.08); stroke: rgba(91,108,173,0.35); stroke-dasharray: 4 3; rx: 12; ry: 12; }
+      .note { font-size: 12px; fill: #6b5e3c; font-style: italic; }
+    </style>
+  </defs>
+  <rect width="1100" height="580" fill="#f7f4ec"/>
+  <text x="40" y="38" font-size="22" class="label">Evaluation pipeline — src/rag_demo/eval/</text>
+  <text x="40" y="60" class="sub">Three evaluator modules run against the curated benchmark questions in corpus_manifest.json</text>
+
+  <!-- Inputs -->
+  <rect x="30" y="80" width="320" height="180" class="band-a"/>
+  <text x="50" y="105" class="label" fill="#0f766e">Inputs</text>
+  <rect x="50" y="120" width="280" height="46" class="box"/>
+  <text x="190" y="142" text-anchor="middle" class="label">corpus_manifest.json</text>
+  <text x="190" y="158" text-anchor="middle" class="sub">documents · benchmark_questions</text>
+
+  <rect x="50" y="180" width="280" height="46" class="box"/>
+  <text x="190" y="202" text-anchor="middle" class="label">data/manifest.json</text>
+  <text x="190" y="218" text-anchor="middle" class="sub">ingested doc_ids · chunk_count</text>
+
+  <!-- Three eval stages -->
+  <rect x="370" y="80" width="700" height="420" class="band-b"/>
+  <text x="390" y="105" class="label" fill="#d97706">Evaluator</text>
+
+  <rect x="390" y="120" width="320" height="84" class="box"/>
+  <text x="550" y="142" text-anchor="middle" class="label">compute_extraction_stats()</text>
+  <text x="550" y="162" text-anchor="middle" class="sub">per-doc: chunk_type_counts,</text>
+  <text x="550" y="178" text-anchor="middle" class="sub">pages_with_typed_visual,</text>
+  <text x="550" y="194" text-anchor="middle" class="sub">"no visuals extracted" flag</text>
+
+  <rect x="730" y="120" width="320" height="84" class="box"/>
+  <text x="890" y="142" text-anchor="middle" class="label">evaluate_question() (per Q)</text>
+  <text x="890" y="162" text-anchor="middle" class="sub">runs multimodal AND baseline</text>
+  <text x="890" y="178" text-anchor="middle" class="sub">captures evidence types, pages,</text>
+  <text x="890" y="194" text-anchor="middle" class="sub">citations, latency, failures</text>
+
+  <rect x="390" y="220" width="660" height="120" class="box"/>
+  <text x="720" y="244" text-anchor="middle" class="label">Per-question metrics</text>
+  <text x="720" y="268" text-anchor="middle" class="sub">expected_type_hit  — did the retriever surface a chunk of the kind the question implies?</text>
+  <text x="720" y="288" text-anchor="middle" class="sub">citation_present   — did the answer include a [doc_id, p.X] citation?</text>
+  <text x="720" y="308" text-anchor="middle" class="sub">citation_page_match— does the cited page appear in the retrieved evidence set?</text>
+  <text x="720" y="328" text-anchor="middle" class="sub">insufficient_evidence — model declined to answer; also tracked as a distinct rate.</text>
+
+  <rect x="390" y="358" width="320" height="130" class="box"/>
+  <text x="550" y="380" text-anchor="middle" class="label">aggregate()</text>
+  <text x="550" y="402" text-anchor="middle" class="sub">hit-rate, citation-rate, mean chars,</text>
+  <text x="550" y="418" text-anchor="middle" class="sub">mean latency — per mode.</text>
+  <text x="550" y="444" text-anchor="middle" class="sub">Judge rollup when --judge is on:</text>
+  <text x="550" y="462" text-anchor="middle" class="sub">wins/ties, mean judge scores.</text>
+
+  <rect x="730" y="358" width="320" height="130" class="box"/>
+  <text x="890" y="380" text-anchor="middle" class="label">judge_pair() (optional)</text>
+  <text x="890" y="402" text-anchor="middle" class="sub">LLM judge rates 1–5 on</text>
+  <text x="890" y="418" text-anchor="middle" class="sub">groundedness · completeness ·</text>
+  <text x="890" y="434" text-anchor="middle" class="sub">visual reasoning. Returns JSON</text>
+  <text x="890" y="452" text-anchor="middle" class="sub">verdict {winner, rationale}.</text>
+
+  <path class="arrow" d="M 340 165 L 390 165"/>
+  <path class="arrow" d="M 340 200 L 390 200"/>
+  <path class="arrow" d="M 550 204 L 550 220"/>
+  <path class="arrow" d="M 890 204 L 890 220"/>
+  <path class="arrow" d="M 720 340 L 720 358"/>
+
+  <!-- Outputs -->
+  <rect x="30" y="290" width="320" height="210" class="band-c"/>
+  <text x="50" y="315" class="label" fill="#5b6cad">Outputs</text>
+  <rect x="50" y="330" width="280" height="50" class="box"/>
+  <text x="190" y="352" text-anchor="middle" class="label">data/eval/eval.md</text>
+  <text x="190" y="368" text-anchor="middle" class="sub">markdown report (tables + aggregates)</text>
+
+  <rect x="50" y="390" width="280" height="50" class="box"/>
+  <text x="190" y="412" text-anchor="middle" class="label">data/eval/eval.json</text>
+  <text x="190" y="428" text-anchor="middle" class="sub">machine-readable for regression checks</text>
+
+  <rect x="50" y="450" width="280" height="40" class="box" fill="#fff8ec"/>
+  <text x="190" y="474" text-anchor="middle" class="sub">stdout — rendered markdown preview</text>
+
+  <path class="arrow" d="M 390 440 L 330 420"/>
+  <path class="arrow" d="M 390 420 L 330 360"/>
+
+  <text x="40" y="548" class="note">Why measure both modes against the same questions? To prove that the typed multimodal index is not just bigger but structurally better at surfacing the right kind of evidence — and then citing it.</text>
+</svg>

@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" font-family="Iowan Old Style, Georgia, serif" font-size="14">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#17212b"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #17212b; stroke-width: 1.4; rx: 8; ry: 8; }
+      .label { font-weight: 700; fill: #17212b; }
+      .sub   { font-size: 12px; fill: #4b5563; }
+      .arrow { stroke: #17212b; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .dash  { stroke-dasharray: 5 4; }
+      .note  { font-size: 12px; fill: #6b5e3c; font-style: italic; }
+      .band-in  { fill: #e7f3f1; stroke: #0f766e; rx: 12; ry: 12; stroke-dasharray: 4 3; }
+      .band-gen { fill: #fff2e3; stroke: #d97706; rx: 12; ry: 12; stroke-dasharray: 4 3; }
+      .band-out { fill: #eef0fa; stroke: #5b6cad; rx: 12; ry: 12; stroke-dasharray: 4 3; }
+    </style>
+  </defs>
+  <rect width="1100" height="560" fill="#f7f4ec"/>
+
+  <text x="40" y="38" font-size="22" class="label">Grounded answer + real token streaming — src/rag_demo/answer.py</text>
+
+  <!-- Input band -->
+  <rect x="30" y="70" width="320" height="430" class="band-in"/>
+  <text x="50" y="95" class="label" fill="#0f766e">Inputs</text>
+
+  <rect x="50" y="110" width="280" height="46" class="box"/>
+  <text x="190" y="132" text-anchor="middle" class="label">Evidence list</text>
+  <text x="190" y="148" text-anchor="middle" class="sub">from retrieve()</text>
+
+  <rect x="50" y="170" width="280" height="46" class="box"/>
+  <text x="190" y="192" text-anchor="middle" class="label">_format_evidence_text()</text>
+  <text x="190" y="208" text-anchor="middle" class="sub">[i] doc=, page=, type=, section= …</text>
+
+  <rect x="50" y="230" width="280" height="66" class="box"/>
+  <text x="190" y="252" text-anchor="middle" class="label">_select_image_evidence()</text>
+  <text x="190" y="270" text-anchor="middle" class="sub">≤3 images: figure / table / caption first</text>
+  <text x="190" y="286" text-anchor="middle" class="sub">dedup by (doc_id, page)</text>
+
+  <rect x="50" y="310" width="280" height="66" class="box"/>
+  <text x="190" y="332" text-anchor="middle" class="label">_image_path_for()</text>
+  <text x="190" y="350" text-anchor="middle" class="sub">prefer crop_ref → image_ref</text>
+  <text x="190" y="366" text-anchor="middle" class="sub">base64 inline, detail="high"</text>
+
+  <rect x="50" y="390" width="280" height="92" class="box"/>
+  <text x="190" y="414" text-anchor="middle" class="label">System prompt rules</text>
+  <text x="190" y="434" text-anchor="middle" class="sub">"Use ONLY the supplied evidence"</text>
+  <text x="190" y="452" text-anchor="middle" class="sub">every claim ends in [doc_id, p.X]</text>
+  <text x="190" y="470" text-anchor="middle" class="sub">"insufficient evidence" fallback</text>
+
+  <!-- Generation band -->
+  <rect x="380" y="70" width="340" height="430" class="band-gen"/>
+  <text x="400" y="95" class="label" fill="#d97706">Generation</text>
+
+  <rect x="400" y="110" width="300" height="60" class="box"/>
+  <text x="550" y="132" text-anchor="middle" class="label">OpenAI chat.completions.create</text>
+  <text x="550" y="150" text-anchor="middle" class="sub">answer_model (gpt-4o-mini)</text>
+  <text x="550" y="164" text-anchor="middle" class="sub">stream=True, temp=0.1</text>
+
+  <rect x="400" y="190" width="300" height="90" class="box"/>
+  <text x="550" y="212" text-anchor="middle" class="label">Stream loop</text>
+  <text x="550" y="232" text-anchor="middle" class="sub">for chunk in resp:</text>
+  <text x="550" y="248" text-anchor="middle" class="sub">  full += delta</text>
+  <text x="550" y="264" text-anchor="middle" class="sub">  yield (full, None)</text>
+
+  <rect x="400" y="300" width="300" height="70" class="box"/>
+  <text x="550" y="322" text-anchor="middle" class="label">Final yield</text>
+  <text x="550" y="340" text-anchor="middle" class="sub">(full_text, AnswerPayload)</text>
+  <text x="550" y="356" text-anchor="middle" class="sub">with citations + debug</text>
+
+  <rect x="400" y="390" width="300" height="92" class="box"/>
+  <text x="550" y="414" text-anchor="middle" class="label">Offline stub (_stub_answer)</text>
+  <text x="550" y="432" text-anchor="middle" class="sub">no OPENAI_API_KEY →</text>
+  <text x="550" y="450" text-anchor="middle" class="sub">surface top evidence + cite</text>
+  <text x="550" y="470" text-anchor="middle" class="sub">one synthetic [doc_id, p.X]</text>
+
+  <!-- Output band -->
+  <rect x="750" y="70" width="320" height="430" class="band-out"/>
+  <text x="770" y="95" class="label" fill="#5b6cad">Outputs</text>
+
+  <rect x="770" y="110" width="280" height="60" class="box"/>
+  <text x="910" y="132" text-anchor="middle" class="label">Gradio Markdown</text>
+  <text x="910" y="150" text-anchor="middle" class="sub">renders partial text incrementally</text>
+  <text x="910" y="164" text-anchor="middle" class="sub">(not chunked — true token deltas)</text>
+
+  <rect x="770" y="190" width="280" height="90" class="box"/>
+  <text x="910" y="212" text-anchor="middle" class="label">_validate_citations()</text>
+  <text x="910" y="232" text-anchor="middle" class="sub">regex [doc_id, p.X]</text>
+  <text x="910" y="250" text-anchor="middle" class="sub">cross-check against retrieved pages</text>
+  <text x="910" y="266" text-anchor="middle" class="sub">valid_count / invalid_count</text>
+
+  <rect x="770" y="300" width="280" height="70" class="box"/>
+  <text x="910" y="322" text-anchor="middle" class="label">UI badge</text>
+  <text x="910" y="340" text-anchor="middle" class="sub">✔ cite-grounded / ✘ off-evidence</text>
+  <text x="910" y="356" text-anchor="middle" class="sub">surfaced on the Answer tab</text>
+
+  <rect x="770" y="390" width="280" height="92" class="box"/>
+  <text x="910" y="414" text-anchor="middle" class="label">AnswerPayload</text>
+  <text x="910" y="432" text-anchor="middle" class="sub">.answer · .citations (structured)</text>
+  <text x="910" y="450" text-anchor="middle" class="sub">.evidence · .debug</text>
+  <text x="910" y="470" text-anchor="middle" class="sub">consumed by CLI / eval / UI</text>
+
+  <!-- flow arrows between bands -->
+  <path class="arrow" d="M 330 135 L 400 135"/>
+  <path class="arrow" d="M 330 260 L 400 260"/>
+  <path class="arrow" d="M 330 430 L 400 430"/>
+  <path class="arrow" d="M 700 135 L 770 135"/>
+  <path class="arrow" d="M 700 230 L 770 230"/>
+  <path class="arrow" d="M 700 330 L 770 330"/>
+  <path class="arrow dash" d="M 700 430 L 770 430"/>
+
+  <text x="40" y="540" class="note">Streaming contract: stream_answer() is a generator that yields (partial, None) many times, then exactly one (full, AnswerPayload) — callers can render the first element progressively and commit the payload on the final tick.</text>
+</svg>

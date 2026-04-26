@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" font-family="Iowan Old Style, Georgia, serif" font-size="14">
+  <defs>
+    <style>
+      .box { fill: #ffffff; stroke: #17212b; stroke-width: 1.4; rx: 10; ry: 10; }
+      .label { font-weight: 700; fill: #17212b; }
+      .sub { font-size: 12px; fill: #4b5563; }
+      .code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; fill: #17212b; }
+      .keyval { font-size: 12px; fill: #4b5563; }
+      .h { font-weight: 700; font-size: 13px; }
+      .ring-sec  { stroke: #0f766e; }
+      .ring-tbl  { stroke: #d97706; }
+      .ring-fig  { stroke: #5b6cad; }
+      .ring-cap  { stroke: #b43b6f; }
+      .ring-pg   { stroke: #7a7263; }
+    </style>
+  </defs>
+  <rect width="1100" height="560" fill="#f7f4ec"/>
+  <text x="40" y="38" font-size="22" class="label">Chunk payload anatomy — what goes into Qdrant per chunk</text>
+  <text x="40" y="60" class="sub">schema.py — Chunk model. Every typed retrieval unit carries the same superset of fields; the type-specific ones are populated per element class.</text>
+
+  <!-- section_chunk -->
+  <rect x="40"  y="90" width="210" height="420" class="box ring-sec" stroke-width="2"/>
+  <text x="145" y="115" text-anchor="middle" class="h" fill="#0f766e">section_chunk</text>
+  <text x="55" y="140" class="code">chunk_id</text>
+  <text x="55" y="160" class="code">doc_id</text>
+  <text x="55" y="180" class="code">page_num</text>
+  <text x="55" y="200" class="code">element_type</text>
+  <text x="55" y="220" class="code">text</text>
+  <text x="55" y="240" class="code">section_path  ●</text>
+  <text x="55" y="260" class="code">bbox</text>
+  <text x="55" y="280" class="code">parent_id</text>
+  <text x="55" y="300" class="code">image_ref  ●</text>
+  <text x="55" y="320" class="code">crop_ref</text>
+  <text x="55" y="340" class="code">table_html</text>
+  <text x="55" y="360" class="code">table_markdown</text>
+  <text x="55" y="400" class="sub">Typical text: 400–1600 chars</text>
+  <text x="55" y="418" class="sub">Many per (section, page)</text>
+  <text x="55" y="452" class="sub">Loads as "section prose"</text>
+  <text x="55" y="470" class="sub">for text and mixed kinds.</text>
+
+  <!-- table_chunk -->
+  <rect x="260" y="90" width="210" height="420" class="box ring-tbl" stroke-width="2"/>
+  <text x="365" y="115" text-anchor="middle" class="h" fill="#d97706">table_chunk</text>
+  <text x="275" y="140" class="code">chunk_id</text>
+  <text x="275" y="160" class="code">doc_id</text>
+  <text x="275" y="180" class="code">page_num</text>
+  <text x="275" y="200" class="code">element_type</text>
+  <text x="275" y="220" class="code">text  ●</text>
+  <text x="275" y="240" class="code">section_path</text>
+  <text x="275" y="260" class="code">bbox  ●</text>
+  <text x="275" y="280" class="code">parent_id</text>
+  <text x="275" y="300" class="code">image_ref</text>
+  <text x="275" y="320" class="code">crop_ref  ●</text>
+  <text x="275" y="340" class="code">table_html  ●</text>
+  <text x="275" y="360" class="code">table_markdown  ●</text>
+  <text x="275" y="400" class="sub">text = caption + markdown</text>
+  <text x="275" y="418" class="sub">HTML truncated at 4 KB</text>
+  <text x="275" y="452" class="sub">Fed as **markdown** to the</text>
+  <text x="275" y="470" class="sub">LLM, crop attached as image.</text>
+
+  <!-- figure_chunk -->
+  <rect x="480" y="90" width="210" height="420" class="box ring-fig" stroke-width="2"/>
+  <text x="585" y="115" text-anchor="middle" class="h" fill="#5b6cad">figure_chunk</text>
+  <text x="495" y="140" class="code">chunk_id</text>
+  <text x="495" y="160" class="code">doc_id</text>
+  <text x="495" y="180" class="code">page_num</text>
+  <text x="495" y="200" class="code">element_type</text>
+  <text x="495" y="220" class="code">text = caption  ●</text>
+  <text x="495" y="240" class="code">section_path</text>
+  <text x="495" y="260" class="code">bbox  ●</text>
+  <text x="495" y="280" class="code">parent_id</text>
+  <text x="495" y="300" class="code">image_ref</text>
+  <text x="495" y="320" class="code">crop_ref  ●●</text>
+  <text x="495" y="340" class="code">extra.caption  ●</text>
+  <text x="495" y="400" class="sub">crop_ref is the whole point:</text>
+  <text x="495" y="418" class="sub">Docling's pil_image saved as</text>
+  <text x="495" y="452" class="sub">PNG so the vision model sees</text>
+  <text x="495" y="470" class="sub">only the figure, not the page.</text>
+
+  <!-- caption_chunk -->
+  <rect x="700" y="90" width="180" height="420" class="box ring-cap" stroke-width="2"/>
+  <text x="790" y="115" text-anchor="middle" class="h" fill="#b43b6f">caption_chunk</text>
+  <text x="715" y="140" class="code">chunk_id</text>
+  <text x="715" y="160" class="code">doc_id</text>
+  <text x="715" y="180" class="code">page_num</text>
+  <text x="715" y="200" class="code">element_type</text>
+  <text x="715" y="220" class="code">text = caption  ●</text>
+  <text x="715" y="240" class="code">section_path</text>
+  <text x="715" y="260" class="code">parent_id  ●</text>
+  <text x="715" y="280" class="code">image_ref</text>
+  <text x="715" y="300" class="code">crop_ref</text>
+  <text x="715" y="340" class="sub">Splits caption out as its</text>
+  <text x="715" y="358" class="sub">own embeddable unit — lets</text>
+  <text x="715" y="396" class="sub">the router match phrases</text>
+  <text x="715" y="414" class="sub">like "what does figure 1</text>
+  <text x="715" y="432" class="sub">show" on caption alone.</text>
+
+  <!-- page_fallback_chunk -->
+  <rect x="890" y="90" width="180" height="420" class="box ring-pg" stroke-width="2"/>
+  <text x="980" y="115" text-anchor="middle" class="h" fill="#7a7263">page_fallback</text>
+  <text x="905" y="140" class="code">chunk_id</text>
+  <text x="905" y="160" class="code">doc_id</text>
+  <text x="905" y="180" class="code">page_num  ●</text>
+  <text x="905" y="200" class="code">element_type</text>
+  <text x="905" y="220" class="code">text (joined)  ●</text>
+  <text x="905" y="260" class="code">image_ref</text>
+  <text x="905" y="340" class="sub">All page text concat &amp;</text>
+  <text x="905" y="358" class="sub">capped at 4 K chars.</text>
+  <text x="905" y="396" class="sub">Used by both collections</text>
+  <text x="905" y="414" class="sub">(baseline is nearly all</text>
+  <text x="905" y="432" class="sub">these).</text>
+
+  <text x="40" y="540" class="sub">● = primary field, ●● = distinguishing field. Empty cells mean the field is typically unset or absent for that class.</text>
+</svg>

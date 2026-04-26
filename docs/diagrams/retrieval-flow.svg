@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" font-family="Iowan Old Style, Georgia, serif" font-size="14">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#17212b"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #17212b; stroke-width: 1.4; rx: 8; ry: 8; }
+      .label { font-weight: 700; fill: #17212b; }
+      .sub   { font-size: 12px; fill: #4b5563; }
+      .arrow { stroke: #17212b; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .dash  { stroke-dasharray: 5 4; }
+      .kind-table  { fill: #fff2e3; stroke: #d97706; rx: 8; ry: 8; }
+      .kind-figure { fill: #eef0fa; stroke: #5b6cad; rx: 8; ry: 8; }
+      .kind-mixed  { fill: #f5e9f1; stroke: #b43b6f; rx: 8; ry: 8; }
+      .kind-text   { fill: #e7f3f1; stroke: #0f766e; rx: 8; ry: 8; }
+      .note  { font-size: 12px; fill: #6b5e3c; font-style: italic; }
+    </style>
+  </defs>
+  <rect width="1100" height="620" fill="#f7f4ec"/>
+
+  <text x="40" y="38" font-size="22" class="label">Intent-routed retrieval — src/rag_demo/retrieve.py</text>
+  <text x="40" y="60" class="sub">Multimodal mode: layered typed passes, dedup by score, page-neighborhood expansion. Baseline mode: single plain search.</text>
+
+  <!-- Question -->
+  <rect x="40" y="90" width="200" height="56" class="box"/>
+  <text x="140" y="112" text-anchor="middle" class="label">Question text</text>
+  <text x="140" y="130" text-anchor="middle" class="sub">from CLI / UI / eval</text>
+
+  <!-- Router -->
+  <rect x="280" y="90" width="260" height="56" class="box"/>
+  <text x="410" y="112" text-anchor="middle" class="label">infer_query_kind()</text>
+  <text x="410" y="130" text-anchor="middle" class="sub">regex over table / figure hints</text>
+
+  <rect x="580" y="90" width="220" height="56" class="box"/>
+  <text x="690" y="112" text-anchor="middle" class="label">embed_query()</text>
+  <text x="690" y="130" text-anchor="middle" class="sub">OpenAI or hash backend</text>
+
+  <path class="arrow" d="M 240 118 L 280 118"/>
+  <path class="arrow" d="M 540 118 L 580 118"/>
+
+  <!-- Four kinds -->
+  <g transform="translate(40, 190)">
+    <rect width="250" height="150" class="kind-table"/>
+    <text x="15" y="28" class="label" fill="#d97706">kind = table</text>
+    <text x="15" y="56" class="sub">Pass 1: [table_chunk, caption_chunk]</text>
+    <text x="15" y="76" class="sub">Pass 2: [section_chunk, page_fallback]</text>
+    <text x="15" y="108" class="sub">Hint words: table, row, column, cell, bleu,</text>
+    <text x="15" y="124" class="sub">accuracy, layers, how many, parameters, …</text>
+  </g>
+
+  <g transform="translate(310, 190)">
+    <rect width="250" height="150" class="kind-figure"/>
+    <text x="15" y="28" class="label" fill="#5b6cad">kind = figure</text>
+    <text x="15" y="56" class="sub">Pass 1: [figure_chunk, caption_chunk]</text>
+    <text x="15" y="76" class="sub">Pass 2: [page_fallback, section_chunk]</text>
+    <text x="15" y="108" class="sub">Hints: figure, fig., diagram, chart, plot,</text>
+    <text x="15" y="124" class="sub">arrow, architecture, block, axis, legend, …</text>
+  </g>
+
+  <g transform="translate(580, 190)">
+    <rect width="250" height="150" class="kind-mixed"/>
+    <text x="15" y="28" class="label" fill="#b43b6f">kind = mixed</text>
+    <text x="15" y="56" class="sub">Pass 1: [table, figure, caption]</text>
+    <text x="15" y="76" class="sub">Pass 2: [section, page_fallback]</text>
+    <text x="15" y="108" class="sub">Triggered when both table and figure</text>
+    <text x="15" y="124" class="sub">hints fire in the same question.</text>
+  </g>
+
+  <g transform="translate(850, 190)">
+    <rect width="210" height="150" class="kind-text"/>
+    <text x="15" y="28" class="label" fill="#0f766e">kind = text (default)</text>
+    <text x="15" y="56" class="sub">Pass 1: [section, caption]</text>
+    <text x="15" y="76" class="sub">Pass 2: [table, figure]</text>
+    <text x="15" y="96" class="sub">Pass 3: [page_fallback]</text>
+    <text x="15" y="124" class="sub">Safety ladder for open-ended Qs.</text>
+  </g>
+
+  <!-- Aggregation + neighborhood -->
+  <rect x="40" y="380" width="500" height="80" class="box"/>
+  <text x="290" y="408" text-anchor="middle" class="label">Aggregate + dedup by chunk_id (keep max score)</text>
+  <text x="290" y="428" text-anchor="middle" class="sub">All pass results merged, then sorted descending. Top-k kept (≥ 6 for expansion).</text>
+
+  <rect x="560" y="380" width="500" height="80" class="box"/>
+  <text x="810" y="408" text-anchor="middle" class="label">_expand_page_neighborhood()</text>
+  <text x="810" y="428" text-anchor="middle" class="sub">Direct Qdrant scroll on (doc_id, page, page_fallback) for top-3 pages.</text>
+  <text x="810" y="445" text-anchor="middle" class="sub">Score demoted to 0.45 so it never outranks typed evidence.</text>
+
+  <path class="arrow" d="M 540 420 L 560 420"/>
+
+  <!-- Final evidence -->
+  <rect x="280" y="490" width="540" height="70" class="box" fill="#fff"/>
+  <text x="550" y="515" text-anchor="middle" class="label">Final ranked Evidence list → (evidence, debug)</text>
+  <text x="550" y="535" text-anchor="middle" class="sub">debug carries: kind, per-pass counts, final chunk_ids with types, pages, scores.</text>
+
+  <path class="arrow" d="M 290 460 C 290 485, 380 485, 500 490"/>
+  <path class="arrow" d="M 810 460 C 810 485, 720 485, 640 490"/>
+
+  <!-- Baseline -->
+  <rect x="840" y="380" width="0" height="0"/>
+  <rect x="40" y="490" width="220" height="70" class="box" fill="#fff8ec"/>
+  <text x="150" y="515" text-anchor="middle" class="label">Baseline mode</text>
+  <text x="150" y="535" text-anchor="middle" class="sub">single search, no layering</text>
+
+  <text x="40" y="600" class="note">Design note: direct `scroll` on (doc_id, page_num) avoids a wasted embedding for "page N context" — the original design spent an API call to re-embed known anchors.</text>
+</svg>

@@ -26,6 +26,8 @@ USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 "
     "(KHTML, like Gecko) rag-demo-unified/0.1 Safari/537.36"
 )
+DOWNLOAD_ATTEMPTS = 3
+DOWNLOAD_TIMEOUT = (10, 120)
 
 
 @dataclass
@@ -47,8 +49,12 @@ def load_manifest(path: Path = DEFAULT_MANIFEST) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _stream_download(url: str, dest: Path, timeout: int = 60) -> int:
+def _stream_download(
+    url: str, dest: Path, timeout: tuple[int, int] = DOWNLOAD_TIMEOUT
+) -> int:
     headers = {"User-Agent": USER_AGENT, "Accept": "application/pdf,*/*;q=0.5"}
+    tmp = dest.with_suffix(dest.suffix + ".part")
+    tmp.unlink(missing_ok=True)
     with requests.get(
         url, headers=headers, stream=True, timeout=timeout, allow_redirects=True
     ) as r:
@@ -56,14 +62,17 @@ def _stream_download(url: str, dest: Path, timeout: int = 60) -> int:
         ctype = r.headers.get("Content-Type", "")
         if "pdf" not in ctype.lower() and "octet-stream" not in ctype.lower():
             logger.warning("%s returned content-type %s (may not be a PDF)", url, ctype)
-        tmp = dest.with_suffix(dest.suffix + ".part")
-        with tmp.open("wb") as fh:
-            n = 0
-            for chunk in r.iter_content(chunk_size=64 * 1024):
-                if not chunk:
-                    continue
-                fh.write(chunk)
-                n += len(chunk)
+        n = 0
+        try:
+            with tmp.open("wb") as fh:
+                for chunk in r.iter_content(chunk_size=64 * 1024):
+                    if not chunk:
+                        continue
+                    fh.write(chunk)
+                    n += len(chunk)
+        except Exception:
+            tmp.unlink(missing_ok=True)
+            raise
         tmp.replace(dest)
         return n
 
@@ -74,6 +83,35 @@ def _looks_like_pdf(path: Path) -> bool:
             return fh.read(5) == b"%PDF-"
     except OSError:
         return False
+
+
+def _download_valid_pdf(url: str, dest: Path) -> int:
+    last_error = "download failed"
+    for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
+        try:
+            size = _stream_download(url, dest)
+            if _looks_like_pdf(dest):
+                return size
+            dest.unlink(missing_ok=True)
+            last_error = (
+                "downloaded file is not a valid PDF "
+                "(server may have returned HTML); use the source page instead"
+            )
+        except Exception as e:  # noqa: BLE001
+            last_error = str(e)
+            dest.with_suffix(dest.suffix + ".part").unlink(missing_ok=True)
+
+        if attempt < DOWNLOAD_ATTEMPTS:
+            logger.warning(
+                "Download failed for %s (attempt %s/%s): %s; retrying",
+                dest.name,
+                attempt,
+                DOWNLOAD_ATTEMPTS,
+                last_error,
+            )
+            time.sleep(min(2**attempt, 5))
+
+    raise RuntimeError(last_error)
 
 
 def download_corpus(
@@ -97,7 +135,7 @@ def download_corpus(
         url = doc.get("direct_pdf_url")
         note = doc.get("download_note") or doc.get("source_page")
 
-        if dest.exists() and not overwrite:
+        if dest.exists() and not overwrite and _looks_like_pdf(dest):
             results.append(
                 DownloadResult(
                     filename=filename,
@@ -108,6 +146,9 @@ def download_corpus(
                 )
             )
             continue
+        if dest.exists() and not overwrite:
+            logger.warning("%s exists but is not a valid PDF; re-downloading", filename)
+            dest.unlink(missing_ok=True)
 
         if not url:
             results.append(
@@ -122,25 +163,7 @@ def download_corpus(
 
         logger.info("Downloading %s <- %s", filename, url)
         try:
-            size = _stream_download(url, dest)
-            if not _looks_like_pdf(dest):
-                try:
-                    dest.unlink()
-                except OSError:
-                    pass
-                results.append(
-                    DownloadResult(
-                        filename=filename,
-                        status="failed",
-                        size_bytes=size,
-                        url=url,
-                        error=(
-                            "downloaded file is not a valid PDF "
-                            "(server may have returned HTML); use the source page instead"
-                        ),
-                    )
-                )
-                continue
+            size = _download_valid_pdf(url, dest)
             results.append(
                 DownloadResult(
                     filename=filename, status="downloaded", size_bytes=size, url=url

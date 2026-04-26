@@ -1,0 +1,118 @@
+{
+  "created_at": "2026-04-26",
+  "description": "Reconstructed curated public PDF corpus for the multimodal RAG demo. All entries use direct PDF URLs verified for scripted downloads.",
+  "documents": [
+    {
+      "filename": "resnet_2015.pdf",
+      "title": "Deep Residual Learning for Image Recognition",
+      "source_page": "https://arxiv.org/abs/1512.03385",
+      "direct_pdf_url": "https://arxiv.org/pdf/1512.03385",
+      "benchmark_questions": [
+        "What does Figure 1 in the ResNet paper actually show?",
+        "Compare the parameters and depth of ResNet-50 vs ResNet-152.",
+        "What problem do residual connections address in very deep networks?"
+      ]
+    },
+    {
+      "filename": "attention_is_all_you_need_2017.pdf",
+      "title": "Attention Is All You Need",
+      "source_page": "https://arxiv.org/abs/1706.03762",
+      "direct_pdf_url": "https://arxiv.org/pdf/1706.03762",
+      "benchmark_questions": [
+        "What is the architecture of the Transformer encoder block?",
+        "Which BLEU scores does the Transformer report on WMT 2014 EN-DE and EN-FR?",
+        "How does the paper describe multi-head attention?"
+      ]
+    },
+    {
+      "filename": "rag_2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "source_page": "https://arxiv.org/abs/2005.11401",
+      "direct_pdf_url": "https://arxiv.org/pdf/2005.11401",
+      "benchmark_questions": [
+        "How does the RAG paper combine the retriever with the generator at training time?",
+        "What is the difference between RAG-Sequence and RAG-Token?",
+        "Which components are fine-tuned end-to-end in the RAG setup?"
+      ]
+    },
+    {
+      "filename": "clip_2021.pdf",
+      "title": "Learning Transferable Visual Models From Natural Language Supervision",
+      "source_page": "https://arxiv.org/abs/2103.00020",
+      "direct_pdf_url": "https://arxiv.org/pdf/2103.00020",
+      "benchmark_questions": [
+        "What does the CLIP pre-training method diagram show?",
+        "How does CLIP perform zero-shot classification?",
+        "Which datasets or benchmarks are compared in the CLIP results tables?"
+      ]
+    },
+    {
+      "filename": "who_world_health_statistics_2024.pdf",
+      "title": "World Health Statistics 2024",
+      "source_page": "https://iris.who.int/handle/10665/376869",
+      "direct_pdf_url": "https://digitallibrary.un.org/record/4050651/files/9789240094703-eng.pdf",
+      "download_note": "WHO IRIS may serve HTML to scripted clients; the UN Digital Library mirror is used for direct download.",
+      "benchmark_questions": [
+        "Which figure summarizes the impact of COVID-19 on global life expectancy?",
+        "What tables report SDG health indicator progress by region?",
+        "What does the report say about the Triple Billion targets?"
+      ]
+    },
+    {
+      "filename": "oecd_inclusive_education_bulgaria_2026.pdf",
+      "title": "Implementing Inclusive Education Projects in Bulgaria",
+      "source_page": "https://www.oecd.org/en/publications/implementing-inclusive-education-projects-in-bulgaria_be425db9-en.html",
+      "direct_pdf_url": "https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/01/implementing-inclusive-education-projects-in-bulgaria_be425db9/030e0717-en.pdf",
+      "benchmark_questions": [
+        "Which table compares final target and actual 2025 values for the inclusive education projects?",
+        "Which chart in the OECD report shows the largest gap between target and actual?",
+        "What implementation risks does the report identify for Bulgaria's inclusive education projects?"
+      ]
+    },
+    {
+      "filename": "federal_reserve_financial_stability_report_2024.pdf",
+      "title": "Financial Stability Report, April 2024",
+      "source_page": "https://www.federalreserve.gov/publications/financial-stability-report.htm",
+      "direct_pdf_url": "https://www.federalreserve.gov/publications/files/financial-stability-report-20240419.pdf",
+      "benchmark_questions": [
+        "Which chart shows valuation pressures across asset markets in the April 2024 Financial Stability Report?",
+        "What vulnerabilities does the report highlight for commercial real estate?",
+        "Which table or figure summarizes leverage in the financial sector?"
+      ]
+    },
+    {
+      "filename": "world_bank_wdr_2023.pdf",
+      "title": "World Development Report 2023: Migrants, Refugees, and Societies",
+      "source_page": "https://www.worldbank.org/en/publication/wdr2023",
+      "direct_pdf_url": "https://documents1.worldbank.org/curated/en/099931505232227212/pdf/IDU01d84ab4704bc804fea08ac400af3a86ba476.pdf",
+      "download_note": "World Bank rejects HEAD/range probes but accepts normal streamed GET downloads.",
+      "benchmark_questions": [
+        "What does the Match and Motive Matrix in the World Development Report show?",
+        "How many people live outside their country of nationality according to the report?",
+        "Which recommendations does the report make for managing refugee movements?"
+      ]
+    },
+    {
+      "filename": "nasa_systems_engineering_handbook_2016.pdf",
+      "title": "NASA Systems Engineering Handbook",
+      "source_page": "https://www.nasa.gov/reference/systems-engineering-handbook/",
+      "direct_pdf_url": "https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf",
+      "benchmark_questions": [
+        "What does the NASA systems engineering engine diagram show?",
+        "Which life-cycle phases are shown for NASA projects?",
+        "How does the handbook define technical requirements?"
+      ]
+    },
+    {
+      "filename": "nasa_systems_modeling_handbook_2025.pdf",
+      "title": "NASA Systems Modeling Handbook for Systems Engineering",
+      "source_page": "https://standards.nasa.gov/standard/NASA/NASA-HDBK-1009",
+      "direct_pdf_url": "https://standards.nasa.gov/system/files/tmp/2025-03-12-NASA-HDBK-1009A.pdf",
+      "benchmark_questions": [
+        "Which SysML diagram types does the NASA systems modeling handbook describe?",
+        "What work products are covered by the handbook's metamodel?",
+        "Which table or diagram explains requirements traceability?"
+      ]
+    }
+  ]
+}
